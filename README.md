@@ -16,4 +16,4 @@ Here is a todo list.
    But this step is also needed because people can add new programming
    languages.
      
-- Binary search for files extensions when processing.
+- Binary search for programming language entries when processing.
