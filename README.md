@@ -1,4 +1,6 @@
-Loc is still not finished.
+Lines Of Code - LOC
+
+LOC is still not finished.
 
 Done so far:
 
@@ -9,8 +11,8 @@ Current TODO list.
 
 (Implementation)
 - Make directories a valid input.
-- Implement an easy way to add file types as valid inputs.
+- Implement an easy way to add new file types as valid inputs.
 
 (Speed)
-- Sorting the added file types.
+- Sorting the file types in lexicographical order.
 - Binary search on input when processing.
