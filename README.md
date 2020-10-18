@@ -1,12 +1,13 @@
 Loc is still not finished.
 
-Here is a todo list.
+Done so far:
 
 - Switch to Win32 File IO
+- Differentiate between files and directories.
+
+Here is a todo list.
 
 - Make directories as a valid input.
-
-- Differentiate between files and directories.
 
 - Implement an easy way to add a new programming language to program.
 
