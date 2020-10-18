@@ -45,33 +45,28 @@ Win32ReadFile(char *FileName)
 	  else
 	  {
 	    // TODO(faruk) Logging.
-	    Assert(!"Yo");
 	  }
 	}
 	else
 	{
 	  // TODO(faruk): Logging.
-	  Assert(!"yo");
 	}
 	  
       }
       else
       {
 	// TODO(faruk): File is too big.
-	Assert(!"yo");
       }
     }
     else
     {
       // TODO(faruk): Logging???
-      Assert(!"yo");
     }
       
   }
   else
   {
     //TODO(faruk): Logging???
-    Assert(!"yo");
   }
 
   return(Result);

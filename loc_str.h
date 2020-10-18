@@ -125,5 +125,42 @@ SubStringAtBeginning(char *BaseString, char *CheckString)
   return(Result);
 }
 
+internal void
+ConcatString(char *Base, char *Append)
+{
+  while(*Base++ != '\0'){}
+  --Base;
+  
+  while(*Append != '\0')
+  {
+    *Base++ = *Append++;
+  }
+
+  *Base = '\0';
+}
+
+internal void
+CopyString(char *Dest, char *Source)
+{
+  while(*Source != '\0')
+  {
+    *Dest++ = *Source++;
+  }
+  
+  *Dest = '\0';
+}
+
+internal void
+GetFileExtension(char *FileName, char *Extension)
+{
+  while(*FileName++ != '.'){};
+  while(*FileName != '\0')
+  {
+    *Extension++ = *FileName++;
+  }
+
+  *Extension = '\0';
+}
+
 #define LOC_STR_H
 #endif
