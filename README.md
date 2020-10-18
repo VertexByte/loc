@@ -6,12 +6,12 @@ Done so far:
 
 - Switch to Win32 File IO
 - Differentiate between files and directories.
+- Make directories a valid input.
 
 Current TODO list.
 
 (Implementation)
-- Make directories a valid input.
-- Implement an easy way to add new file types as valid inputs.
+- Implement an easy way to add new file types as valid inputs.	
 
 (Speed)
 - Sorting the file types in lexicographical order.
