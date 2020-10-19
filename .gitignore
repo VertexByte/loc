@@ -3,5 +3,5 @@ Debug/
 *.ilk
 *.pdb
 *.obj
-loc.VC.db
+*.db
 loc.sln
