@@ -5,3 +5,4 @@ Debug/
 *.obj
 *.VC.db
 loc.sln
+*.exe

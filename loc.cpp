@@ -154,8 +154,8 @@ Win32ProcessPath(char *Path, final_process_result *GlobalResult)
       
       final_process_result Result = ProcessTextBuffer(&Buffer, Entry);
       
-      /*printf("%s [code: %d, blank: %d, comment:%d]\n",
-	Extension, Result.Code, Result.Blank, Result.Comment);*/
+      printf("%s [code: %d, blank: %d, comment:%d]\n",
+	     Extension, Result.Code, Result.Blank, Result.Comment);
       
       GlobalResult->Code += Result.Code;
       GlobalResult->Blank += Result.Blank;
@@ -167,8 +167,6 @@ Win32ProcessPath(char *Path, final_process_result *GlobalResult)
     }
   }
 }
-
-
 
 int main(int ArgCount, char **ArgV)
 {
@@ -295,5 +293,6 @@ int main(int ArgCount, char **ArgV)
     printf("\n\nTotal [code: %d  blank: %d  comment: %d]\n",
 	   GlobalResult.Code, GlobalResult.Blank, GlobalResult.Comment);
   }
+
   return(0);
 }

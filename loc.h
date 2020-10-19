@@ -16,7 +16,7 @@ typedef s32 b32;
 #define global_variable static
 
 #define Assert(Expression) if(!(Expression)){ *(u32 *)0  = 0; }
-#define NULL_STR "\0"
+#define NULL_STR "_nl_"
 
 #include "loc_str.h"
 
