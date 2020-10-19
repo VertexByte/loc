@@ -16,8 +16,42 @@ typedef s32 b32;
 #define global_variable static
 
 #define Assert(Expression) if(!(Expression)){ *(u32 *)0  = 0; }
+#define NULL_STR "\0"
 
 #include "loc_str.h"
+
+
+struct prog_lang_config
+{
+  char Comment[8];
+  char OpenComment[8];
+  char CloseComment[8];
+
+  char CommentInString[8];
+  char OpenCommentInString[8];
+  char CloseCommentInString[8];
+};
+
+struct file_type_config
+{
+  char Name[32];
+  char Extensions[3][8];
+  u32 ExtensionCount;
+};
+
+struct valid_input_entry
+{
+  file_type_config TypeConfig;
+  prog_lang_config LangConfig;
+};
+
+struct bin_search_entry
+{
+  char Extension[8];
+  u32 ValidEntryIndex;
+};
+
+
 
 struct text_buffer
 {
@@ -75,6 +109,7 @@ enum
 
 
 
+
 // NOTE(faruk): There was a bug where when you don't close the multi line
 // coment it will still count lines as comments.And that happens here
 // if you notice, SubStringAtBeginning(Line, "/*") it has the multi line
@@ -85,7 +120,7 @@ enum
 // So just ingore comment syntax that is in a string "*/".
 // Its beautifly lazy.
 internal u32
-ProcessLine(char *Line, b32 *InComment)
+ProcessLine(char *Line, b32 *InComment, valid_input_entry *Entry)
 {
   u32 Result = BLANK;
   b32 IsComment = *InComment;
@@ -97,23 +132,26 @@ ProcessLine(char *Line, b32 *InComment)
   }
 
   u32 LineLength = StringLength(Line);
+  prog_lang_config *Conf = &Entry->LangConfig;
   
   if(*Line != '\0')
   {
-    if(SubString(Line, "*/") && !SubString(Line, "\"*/\""))
+    if(SubString(Line, Conf->CloseComment) &&
+       !SubString(Line, Conf->CloseCommentInString))
     {
       *InComment = false;
       IsComment = true;
     }
-    else if(SubString(Line, "/*") && !SubString(Line, "\"/*\""))
+    else if(SubString(Line, Conf->OpenComment) &&
+	    !SubString(Line, Conf->OpenCommentInString))
     {
       *InComment = true;
-      if(SubStringAtBeginning(Line, "/*")) 
+      if(SubStringAtBeginning(Line, Conf->OpenComment)) 
       {
 	IsComment = true;
       }
     }
-    else if(SubStringAtBeginning(Line, "//"))
+    else if(SubStringAtBeginning(Line, Conf->Comment))
     {
       IsComment = true;
     }
@@ -144,7 +182,7 @@ ProcessLine(char *Line, b32 *InComment)
 }
 
 internal final_process_result
-ProcessTextBuffer(text_buffer *Buffer)
+ProcessTextBuffer(text_buffer *Buffer, valid_input_entry *Entry)
 {
   final_process_result Result = {};
   
@@ -153,7 +191,7 @@ ProcessTextBuffer(text_buffer *Buffer)
 	  
   while(Line)
   {
-    u32 Switch = ProcessLine(Line, &InComment);
+    u32 Switch = ProcessLine(Line, &InComment, Entry);
 	  
     switch(Switch)
     {
