@@ -19,7 +19,7 @@ int main()
   printf("In cloc this is a comment also.");
   printf("*/");
 
-  //printf("//");
+  printf("//");
   return(0);
 }
 

@@ -151,15 +151,40 @@ CopyString(char *Dest, char *Source)
 }
 
 internal void
-GetFileExtension(char *FileName, char *Extension)
+GetFileExtension(char *Path, char *Extension)
 {
-  while(*FileName++ != '.'){};
-  while(*FileName != '\0')
+  b32 IsFileName = false;
+  while(*Path != '\0')
   {
-    *Extension++ = *FileName++;
+    if(IsFileName)
+    {
+      *Extension++ = *Path;
+    }
+    else if(*Path == '.')
+    {
+      IsFileName = true;
+    }
+
+    ++Path;
   }
 
   *Extension = '\0';
+}
+
+internal void
+CopyMemoryChar(char *Source, char *Dest, u32 Start, u32 End)
+{
+  // NOTE(faruk): +1 is for the string terminator('\0').
+  u32 Size = (End - Start) + 1;
+  
+  for(u32 Index = Start;
+      Index < End;
+      ++Index)
+  {
+    *Dest++ = Source[Index];
+  }
+
+  *Dest = '\0';
 }
 
 #define LOC_STR_H
