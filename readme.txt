@@ -12,8 +12,6 @@ Done so far:
 
 Current TODO list:
 
-- Code clean up.
-
 (Speed)
 - Sorting the file types in lexicographical order.
 - Binary search on input when processing.
