@@ -12,7 +12,24 @@ Done so far:
 
 Current TODO list:
 
+(Switches)
+- Switches to control the output.
+
 (Speed)
+	"And down the rabbit hole we go!!"
+	                             -VertexByte
+				     
+-Add a simple way to mesure performance of the program.
+
+-Have one big buffer for a file's memory rather than allocation memory
+ every time we want to read a file.(The buffer will be about 256mb)
+ 
+- And when we have that big buffer see can we fit multiple files into
+  it, so we can batch the files.
+
+- Look at the way we process lines, try to make it as fast as posible.
+- Future vertexbyte if you know SIMD use it here.
+  
 - Sorting the file types in lexicographical order.
 - Binary search on input when processing.
 
