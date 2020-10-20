@@ -9,8 +9,6 @@ struct file_read_result
   void *Memory;
 };
 
-// TODO(faruk): Look at CloseHandle, i think all handles will be freed
-// when the aplication terminates.
 internal file_read_result
 Win32ReadFile(char *FileName)
 {
