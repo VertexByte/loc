@@ -1,3 +1,5 @@
+/*cc*/
+
 // THis was made by the best programmer ever
 // ever ever
 // ever ever

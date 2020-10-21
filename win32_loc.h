@@ -84,7 +84,7 @@ Win32IsDir(char *Path)
 }
 
 internal void
-Win32ProcessPath(char *Path, lines_process_result *GlobalResult,
+Win32ProcessPath(char *Path, total_result *TotalResult,
 		 entries_state *State)
 {  
   b32 IsDir = Win32IsDir(Path);
@@ -110,7 +110,7 @@ Win32ProcessPath(char *Path, lines_process_result *GlobalResult,
 	  ConcatString(FullPath, "/");
 	  ConcatString(FullPath, SubPath);
 	  
-	  Win32ProcessPath(FullPath, GlobalResult, State);
+	  Win32ProcessPath(FullPath, TotalResult, State);
 	}
       }
     }
@@ -139,15 +139,24 @@ Win32ProcessPath(char *Path, lines_process_result *GlobalResult,
 	
 	/*printf("%s [code: %d, blank: %d, comment:%d]\n",
 	  Extension, Result.Code, Result.Blank, Result.Comment);*/
+
 	
-	GlobalResult->Code += Result.Code;
-	GlobalResult->Blank += Result.Blank;
-	GlobalResult->Comment += Result.Comment;
+	// NOTE(faruk): The toatal lines of a ceration file type is
+	// stored in the entry.
+	++Entry->FileCount;
+	Entry->Code += Result.Code;
+	Entry->Comment += Result.Comment;
+	Entry->Blank += Result.Blank;
+	
+	TotalResult->Count.Code += Result.Code;
+	TotalResult->Count.Blank += Result.Blank;
+	TotalResult->Count.Comment += Result.Comment;
+	++TotalResult->RecognizedFiles;
       }
     }
     else
     {
-      //printf("Couldn't open %s\n", Path);
+      ++TotalResult->WeirdoFiles;
     }
   }
 }

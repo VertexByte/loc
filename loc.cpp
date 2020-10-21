@@ -5,31 +5,13 @@
 #include "win32_loc.h"
 
 /* TODO:
-   (Output)
-   - Show lines of code per programming language in project.
 
-   (Switches)
-   - Switches to control the output.
-
-   (Speed)
-      "And down the rabbit hole we go!!"
-                             -VertexByte
-				     
-   - And when we have that big buffer see can we fit multiple files into
-   it, so we can batch the files.
-
-  - Look at the way we process lines, try to make it as fast as posible.
-  - NOTE(to future faruk): If you learn SIMD use it here.
-
-  - Sorting the file types in lexicographical order.
-  - Binary search on input when processing.
-
-  (Stuff)
-   - bin_search_entry is a strage name.
- */
+*/
 
 int main(int ArgCount, char **ArgV)
 {
+  total_result TotalResult = {};
+  
   LARGE_INTEGER PerformanceFrequency;
   QueryPerformanceFrequency(&PerformanceFrequency);
   u64 CountsPerSecond = PerformanceFrequency.QuadPart;
@@ -38,8 +20,6 @@ int main(int ArgCount, char **ArgV)
   LARGE_INTEGER Large;
   QueryPerformanceCounter(&Large);
   u64 StartCounter = Large.QuadPart;
-  
-  lines_process_result GlobalResult = {};
 
   entries_state EntriesState = {};
   InitializeValidEntries(&EntriesState);
@@ -56,7 +36,7 @@ int main(int ArgCount, char **ArgV)
 	++Iterator)
     {
       char *Path = ArgV[Iterator];
-      Win32ProcessPath(Path, &GlobalResult, &EntriesState);
+      Win32ProcessPath(Path, &TotalResult, &EntriesState);
     }
   }
   else
@@ -73,8 +53,22 @@ int main(int ArgCount, char **ArgV)
 
   if(ArgCount > 1)
   {
-    printf("\n\nTotal [code: %d  blank: %d  comment: %d]\n",
-	   GlobalResult.Code, GlobalResult.Blank, GlobalResult.Comment);
+    for(u32 Index = 0;
+	Index < EntriesState.ValidEntriesCount;
+	++Index)
+    {
+      valid_input_entry *Entry = &EntriesState.ValidEntries[Index];
+      if(Entry->FileCount > 0)
+      {
+	printf("%s [code: %d  comment: %d  blank: %d]\n",
+	       Entry->TypeConfig.Name, Entry->Code, Entry->Comment,
+	       Entry->Blank);
+      }
+    }
+    
+    printf("\n\nTotal [code: %d  comment: %d  blank: %d]\n",
+	   TotalResult.Count.Code, TotalResult.Count.Comment,
+	   TotalResult.Count.Blank);
   }
 
   QueryPerformanceCounter(&Large);

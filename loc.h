@@ -30,8 +30,13 @@ typedef s32 b32;
 struct prog_lang_config
 {
   char Comment[8];
+  u32 CommentLength;
+  
   char OpenComment[8];
+  u32 OpenCommentLength;
+  
   char CloseComment[8];
+  u32 CloseCommentLength;
 
   char CommentInString[8];
   char OpenCommentInString[8];
@@ -49,9 +54,14 @@ struct valid_input_entry
 {
   file_type_config TypeConfig;
   prog_lang_config LangConfig;
+
+  u32 FileCount;
+  u32 Code;
+  u32 Comment;
+  u32 Blank;
 };
 
-struct bin_search_entry
+struct extension_search_entry
 {
   char Extension[8];
   u32 ValidEntryIndex;
@@ -62,7 +72,7 @@ struct entries_state
   valid_input_entry ValidEntries[50];
   u32 ValidEntriesCount;
   
-  bin_search_entry BinEntries[100];
+  extension_search_entry BinEntries[100];
   u32 BinEntriesCount;
 
   void *FileReadBuffer;
@@ -74,9 +84,14 @@ MakeProgLangConfig(char *Comment, char *OpenComment, char *CloseComment)
 {
   prog_lang_config Result = {};
   CopyString(Result.Comment, Comment);
+  Result.CommentLength = StringLength(Comment);
+  
   CopyString(Result.OpenComment, OpenComment);
+  Result.OpenCommentLength = StringLength(OpenComment);
+  
   CopyString(Result.CloseComment, CloseComment);
-
+  Result.CloseCommentLength = StringLength(CloseComment);
+  
   // NOTE(faruk): This is for when we have a case like:
   // printf("//");
   
@@ -115,7 +130,7 @@ internal void
 PushBinEntry(entries_state *State, char *Extension, u32 Index)
 {
   u32 PushIndex = State->BinEntriesCount;
-  bin_search_entry *Entry = &State->BinEntries[PushIndex];
+  extension_search_entry *Entry = &State->BinEntries[PushIndex];
 
   CopyString(Entry->Extension, Extension);
   Entry->ValidEntryIndex = Index;
@@ -263,7 +278,7 @@ CheckExtension(entries_state *State, char *Extension)
 {
   extension_check_result Result = {};
   
-  bin_search_entry *BinEntries = State->BinEntries;
+  extension_search_entry *BinEntries = State->BinEntries;
   u32 BinEntriesCount = State->BinEntriesCount;
 
   valid_input_entry *ValidEntries = State->ValidEntries;
@@ -308,6 +323,13 @@ struct lines_process_result
   //u32 Type;
 };
 
+struct total_result
+{
+  lines_process_result Count;
+  u32 WeirdoFiles;
+  u32 RecognizedFiles;
+};
+
 internal char *
 GetLine(text_buffer *Buffer)
 {
@@ -333,11 +355,6 @@ GetLine(text_buffer *Buffer)
   {
     Buffer->AtEnd = true;
   }
-
-  // TODO(faruk): GetSubStringCopy does an allocation to return a copy
-  // that slow us down significantly, so thats on optimization that we
-  // can easily do.
-  //char *Line = GetSubStringCopy(Text, StartLocation, Index);
 
   // NOTE(faruk): Now we just reuse the same memory(stack memory) all
   // the time and return the line's address as the result, and if we
@@ -380,8 +397,8 @@ ProcessLine(char *Line, b32 *InComment, valid_input_entry *Entry)
 
   u32 LineLength = StringLength(Line);
   prog_lang_config *Conf = &Entry->LangConfig;
-  
-  if(*Line != '\0')
+
+  if(*Line != '\0' && LineLength > 2)
   {
     if(SubString(Line, Conf->CloseComment) &&
        !SubString(Line, Conf->CloseCommentInString))
@@ -403,8 +420,13 @@ ProcessLine(char *Line, b32 *InComment, valid_input_entry *Entry)
       IsComment = true;
     }
   }
-  
-  if(LineLength > 0)
+
+  // NOTE(faruk): For some reason there are carage returns '\r' at the and
+  // but its not just charage returns its also new lines so an end of
+  // a line looks like this \r\n. And when we read a blank line we still
+  // read the \r meaning that its not blank and we need to check
+  // LineLength > 1
+  if(LineLength > 1)
   {
     if(IsComment)
     {
@@ -414,15 +436,6 @@ ProcessLine(char *Line, b32 *InComment, valid_input_entry *Entry)
     {
       Result = CODE;
     }
-  }
-
-  // NOTE(faruk): For some reason there are carage returns '\r' at the and
-  // but its not just charage returns its also new lines so an end of
-  // a line looks like this \r\n. And when we read a blank line we still
-  // read the \r meaning that its not blank and this is the fix for that.
-  if(LineLength == 1 && Line[0] == '\r')
-  {
-    Result = BLANK;
   }
   
   return(Result);
@@ -462,7 +475,7 @@ ProcessTextBuffer(text_buffer *Buffer, valid_input_entry *Entry)
   // NOTE(faruk): Last line is blank.But we don't count that
   // line.
   --Result.Blank;
-
+  
   return(Result);
 }
 

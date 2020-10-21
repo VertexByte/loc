@@ -1,6 +1,6 @@
 Lines Of Code - LOC
 
-LOC is still not finished.
+Not the best program that counts lines of code.
 
 
 Done so far:
@@ -11,26 +11,7 @@ Done so far:
 - Add a simple way to mesure performance of the program.
 - Have one big buffer for a file's memory rather than allocation memory
   every time we want to read a file.(Its a 64 mb buffer)
-
-
-Current TODO list:
-
-(Output)
 - Show lines of code per programming language in project.
-
-(Switches)
-- Switches to control the output.
-
-(Speed)
-- And when we have that big buffer see can we fit multiple files into
-  it, so we can batch the files.
-
-- Look at the way we process lines, try to make it as fast as posible.
-- Future vertexbyte if you know SIMD use it here.
-  
-- Sorting the file types in lexicographical order.
-- Binary search on input when processing.
-
 
 Programming languages suported:
 - C
