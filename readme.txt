@@ -7,23 +7,21 @@ Done so far:
 - Switch to Win32 File IO
 - Differentiate between files and directories.
 - Make directories a valid input.
-- Implement an easy way to add new file types as valid inputs.	
+- Implement an easy way to add new file types as valid inputs.
+- Add a simple way to mesure performance of the program.
+- Have one big buffer for a file's memory rather than allocation memory
+  every time we want to read a file.(Its a 64 mb buffer)
 
 
 Current TODO list:
+
+(Output)
+- Show lines of code per programming language in project.
 
 (Switches)
 - Switches to control the output.
 
 (Speed)
-	"And down the rabbit hole we go!!"
-	                             -VertexByte
-				     
--Add a simple way to mesure performance of the program.
-
--Have one big buffer for a file's memory rather than allocation memory
- every time we want to read a file.(The buffer will be about 256mb)
- 
 - And when we have that big buffer see can we fit multiple files into
   it, so we can batch the files.
 
