@@ -9,6 +9,9 @@ typedef unsigned short u16;
 typedef long s64;
 typedef unsigned long u64;
 
+typedef float r32;
+typedef double r64;
+
 typedef s32 b32;
 
 #define internal static
@@ -61,6 +64,9 @@ struct entries_state
   
   bin_search_entry BinEntries[100];
   u32 BinEntriesCount;
+
+  void *FileReadBuffer;
+  u32 FileReadBufferSize;
 };
 
 internal prog_lang_config
@@ -290,7 +296,7 @@ struct text_buffer
   u32 Size;
   u32 LocationInText;
   b32 AtEnd;
-  char ProcessLine[2048];
+  char ProcessLine[64000];
 };
 
 

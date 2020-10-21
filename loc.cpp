@@ -5,6 +5,8 @@
 #include "win32_loc.h"
 
 /* TODO:
+   (Output)
+   - Show lines of code per programming language in project.
 
    (Switches)
    - Switches to control the output.
@@ -13,11 +15,6 @@
       "And down the rabbit hole we go!!"
                              -VertexByte
 				     
-   -Add a simple way to mesure performance of the program.
-
-   -Have one big buffer for a file's memory rather than allocation memory
-   every time we want to read a file.(The buffer will be about 256mb)
-
    - And when we have that big buffer see can we fit multiple files into
    it, so we can batch the files.
 
@@ -33,10 +30,24 @@
 
 int main(int ArgCount, char **ArgV)
 {
+  LARGE_INTEGER PerformanceFrequency;
+  QueryPerformanceFrequency(&PerformanceFrequency);
+  u64 CountsPerSecond = PerformanceFrequency.QuadPart;
+  
+  // Start counter
+  LARGE_INTEGER Large;
+  QueryPerformanceCounter(&Large);
+  u64 StartCounter = Large.QuadPart;
+  
   lines_process_result GlobalResult = {};
 
   entries_state EntriesState = {};
   InitializeValidEntries(&EntriesState);
+
+  // NOTE(faruk): THe size is 64 mb
+  EntriesState.FileReadBufferSize = (1024*1024)*64;
+  EntriesState.FileReadBuffer = VirtualAlloc(0, EntriesState.FileReadBufferSize,
+					     MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
   
   if(ArgCount > 1)
   {
@@ -66,5 +77,12 @@ int main(int ArgCount, char **ArgV)
 	   GlobalResult.Code, GlobalResult.Blank, GlobalResult.Comment);
   }
 
+  QueryPerformanceCounter(&Large);
+  u64 EndCounter = Large.QuadPart;
+
+  u64 Elapsed = EndCounter - StartCounter;
+  r32 Seconds = (r32)Elapsed/(r32)CountsPerSecond;
+  r32 Ms = Seconds*1000.0f;
+  printf("Time: %.4f MS\n", Ms);
   return(0);
 }

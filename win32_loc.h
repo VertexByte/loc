@@ -10,7 +10,7 @@ struct file_read_result
 };
 
 internal file_read_result
-Win32ReadFile(char *FileName)
+Win32ReadFile(char *FileName, entries_state *State)
 {
   file_read_result Result = {};
   
@@ -27,9 +27,11 @@ Win32ReadFile(char *FileName)
       if(Size < 0xFFFFFFFF)
       {
 	u32 Size32 = (u32)Size;
-	void *Memory = VirtualAlloc(0, Size32, MEM_COMMIT | MEM_RESERVE,
-				    PAGE_READWRITE);
 
+	// NOTE(faruk): Uses the same buffer 64mb buffer for every file
+	// which means only one allocation is needed.
+	void *Memory = State->FileReadBuffer;
+	
 	if(Memory)
 	{
 	  DWORD BytesRead = 0;
@@ -38,6 +40,10 @@ Win32ReadFile(char *FileName)
 	  {
 	    Assert(BytesRead == Size32);
 	    Result.Size = Size32;
+
+	    // NOTE(faruk): Apparently we have to set the end of the file.
+	    char *MemoryChar = (char *)Memory;
+	    MemoryChar[Size32] = '\0';
 	    Result.Memory = Memory;
 	  }
 	  else
@@ -111,30 +117,33 @@ Win32ProcessPath(char *Path, lines_process_result *GlobalResult,
   }
   else
   {
-    file_read_result FileReadResult = Win32ReadFile(Path);
-
     char Extension[64] = {};
     GetFileExtension(Path, Extension);
 
     extension_check_result ExtensionCheck = {};
     ExtensionCheck = CheckExtension(State, Extension);
       
-    if(FileReadResult.Size > 0 && ExtensionCheck.Found)
+    if(ExtensionCheck.Found)
     {
-      valid_input_entry *Entry = ExtensionCheck.Entry;
-      
-      text_buffer Buffer = {};
-      Buffer.Text = (char *)FileReadResult.Memory;
-      Buffer.Size = FileReadResult.Size;
-      
-      lines_process_result Result = ProcessTextBuffer(&Buffer, Entry);
-      
-      /*printf("%s [code: %d, blank: %d, comment:%d]\n",
-	Extension, Result.Code, Result.Blank, Result.Comment);*/
-      
-      GlobalResult->Code += Result.Code;
-      GlobalResult->Blank += Result.Blank;
-      GlobalResult->Comment += Result.Comment;
+      file_read_result FileReadResult = Win32ReadFile(Path, State);
+
+      if(FileReadResult.Size > 0)
+      {
+	valid_input_entry *Entry = ExtensionCheck.Entry;
+	
+	text_buffer Buffer = {};
+	Buffer.Text = (char *)FileReadResult.Memory;
+	Buffer.Size = FileReadResult.Size;
+	
+	lines_process_result Result = ProcessTextBuffer(&Buffer, Entry);
+	
+	/*printf("%s [code: %d, blank: %d, comment:%d]\n",
+	  Extension, Result.Code, Result.Blank, Result.Comment);*/
+	
+	GlobalResult->Code += Result.Code;
+	GlobalResult->Blank += Result.Blank;
+	GlobalResult->Comment += Result.Comment;
+      }
     }
     else
     {
