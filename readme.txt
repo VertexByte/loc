@@ -1,7 +1,9 @@
 Lines Of Code - LOC
 
--V 1.0
-
+- Version 1.0
+  -> 764 lines of code
+  -> managed to load a ~1.2 mil project in ~2.3 sec
+  
 Programming languages suported:
 - C
 - C++
