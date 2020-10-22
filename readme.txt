@@ -1,17 +1,6 @@
 Lines Of Code - LOC
 
-Not the best program that counts lines of code.
-
-
-Done so far:
-- Switch to Win32 File IO
-- Differentiate between files and directories.
-- Make directories a valid input.
-- Implement an easy way to add new file types as valid inputs.
-- Add a simple way to mesure performance of the program.
-- Have one big buffer for a file's memory rather than allocation memory
-  every time we want to read a file.(Its a 64 mb buffer)
-- Show lines of code per programming language in project.
+-V 1.0
 
 Programming languages suported:
 - C
@@ -26,6 +15,30 @@ Programming languages suported:
 - Go
 - HTML
 - Batch
+
+---- Usage ----
+Parameters: files or directories
+   Example:
+         >loc source.cpp              -Single file
+	 
+         >loc c:/work or c:/work/     -Directory
+
+         >loc source.cpp main.cpp c:/work/project c:/work/project2/ - Combined
+
+
+TODO
+ - Empty for now.
+
+Done so far:
+- Switch to Win32 File IO
+- Differentiate between files and directories.
+- Make directories a valid input.
+- Implement an easy way to add new file types as valid inputs.
+- Add a simple way to mesure performance of the program.
+- Have one big buffer for a file's memory rather than allocation memory
+  every time we want to read a file.(Its a 64 mb buffer)
+- Show lines of code per programming language in project.
+- Optimized the line processing routine by 25%
 
 
 Licnese:
