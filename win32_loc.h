@@ -30,6 +30,7 @@ Win32ReadFile(char *FileName, entries_state *State)
 
 	// NOTE(faruk): Uses the same buffer 64mb buffer for every file
 	// which means only one allocation is needed.
+
 	void *Memory = State->FileReadBuffer;
 	
 	if(Memory)
@@ -134,6 +135,7 @@ Win32ProcessPath(char *Path, total_result *TotalResult,
 	text_buffer Buffer = {};
 	Buffer.Text = (char *)FileReadResult.Memory;
 	Buffer.Size = FileReadResult.Size;
+
 	
 	lines_process_result Result = ProcessTextBuffer(&Buffer, Entry);
 	

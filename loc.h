@@ -396,7 +396,7 @@ ProcessLine(char *Line, b32 *InComment, valid_input_entry *Entry)
   }
 
   u32 LineLength = StringLength(Line);
-  prog_lang_config *Conf = &Entry->LangConfig;
+  prog_lang_config *Conf = &Entry->LangConfig; 
 
   if(*Line != '\0' && LineLength > 2)
   {
@@ -441,6 +441,107 @@ ProcessLine(char *Line, b32 *InComment, valid_input_entry *Entry)
   return(Result);
 }
 
+
+// NOTE(faruk): This way of processing is lines better that the
+// one above.Idk if its really faster but the first implementation
+// has a bug and thats if we have something like this:
+//
+//  Example:
+//    int a = 32; /* Counts this line as a comment */
+//
+// And that line is counted as a comment and it should be counted as a
+// code line, so in this newer implementation that bug is fixed.
+internal u32
+ProcessLineBetter(char *Line, b32 *InComment, valid_input_entry *Entry)
+{
+  u32 Result = BLANK;
+  b32 IsComment = *InComment;
+  
+  // NOTE(faruk): Ignoring the whitespace at the begining.
+  while(*Line == ' ' || *Line == '\t')
+  {
+    ++Line;
+  }
+
+  u32 LineLength = StringLength(Line);
+  prog_lang_config *Conf = &Entry->LangConfig;
+
+  u32 LineCursor = 0;
+
+  b32 CodeFirst = false;
+
+  // NOTE(faruk): If line langht isnt blank LineLength it will be
+  // 2 charecters long because for some reason we read a
+  // '\r' (charage return)
+  if(LineLength > 1)
+  {
+    while(Line[LineCursor] != '\r' &&
+	  Line[LineCursor] != '\0')
+    {
+      char *LineLoc = Line + LineCursor;
+      
+      if(!(*InComment) && StringCompare(LineLoc, Conf->OpenComment,
+					Conf->OpenCommentLength))
+      {
+	if(LineCursor > 0)
+	{
+	  Result = CODE;
+	  CodeFirst = true;
+	  if(*(LineLoc - 1) != '\"')
+	  {
+	    *InComment = true;
+	  }
+	}
+	else
+	{
+	  *InComment = true;
+	  Result = COMMENT;
+	}
+
+	LineCursor += Conf->OpenCommentLength - 1;
+      }
+      else if(*InComment && StringCompare(LineLoc, Conf->CloseComment,
+					  Conf->CloseCommentLength))
+      {
+	*InComment = false;
+	Result = COMMENT;
+	if(CodeFirst)
+	{
+	  Result = CODE;
+	}
+	else
+	{
+	  Result = COMMENT;
+	}
+      
+	LineCursor += Conf->CloseCommentLength - 1;
+      }
+      else if(LineCursor == 0 && StringCompare(LineLoc, Conf->Comment,
+					       Conf->CommentLength))
+      {
+	LineCursor += Conf->CommentLength - 1;
+	Result = COMMENT;
+	break;
+      }
+      else
+      {
+	if(*InComment)
+	{
+	  Result = COMMENT;
+	}
+	else
+	{
+	  Result = CODE;
+	}
+      }
+    
+      ++LineCursor;
+    }
+  }
+  
+  return(Result);
+}
+
 internal lines_process_result
 ProcessTextBuffer(text_buffer *Buffer, valid_input_entry *Entry)
 {
@@ -451,7 +552,7 @@ ProcessTextBuffer(text_buffer *Buffer, valid_input_entry *Entry)
 	  
   while(Line)
   {
-    u32 Switch = ProcessLine(Line, &InComment, Entry);
+    u32 Switch = ProcessLineBetter(Line, &InComment, Entry);
 	  
     switch(Switch)
     {

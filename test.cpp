@@ -21,6 +21,11 @@ int main()
   printf("In cloc this is a comment also.");
   printf("*/");
 
+
+  prinf("ss"); /* */
+
+  /* */ printf("ss");
+    
   printf("//");
   return(0);
 }
