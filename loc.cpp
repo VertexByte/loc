@@ -79,7 +79,7 @@ int main(int ArgCount, char **ArgV)
   u64 Elapsed = EndCounter - StartCounter;
   r32 Seconds = (r32)Elapsed/(r32)CountsPerSecond;
   r32 Ms = Seconds*1000.0f;
-  printf("Time: %.4f MS\n", Ms);
+  printf("Time: %.4f seconds\n", Seconds);
 
   r32 FilesPerSecond = (r32)TotalResult.RecognizedFiles/Seconds;
   printf("Speed: %.4f files per second\n", FilesPerSecond);
